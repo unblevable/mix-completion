@@ -2,19 +2,37 @@
 
 # Bash completion for Elixir's build tool, Mix
 
-
 _mix()
 {
-    # COMPREPLY=()
-    local current="${COMP_WORDS[COMP_CWORD]}"
-    local previous="${COMP_WORDS[COMP_CWORD - 1]}"
+    local current previous exs tasks separator task_list task_list_file
 
-    local exs="tasks.exs"
-    chmod +x "$exs"
-    local tasks=($(./$exs))
-    local separator=" "
-    local task_list="$(printf "${separator}%s" "${tasks[@]}")"
-    task_list="${task_list:${#separator}}"
+    COMPREPLY=()
+
+    current="${COMP_WORDS[COMP_CWORD]}"
+    previous="${COMP_WORDS[COMP_CWORD - 1]}"
+
+    task_list_file="task_list"
+    # create a cache if it doesn't exist
+    if [ ! -f "$task_list_file" ] ; then
+        # tasks.exs outputs a space-delimted string of Mix tasks
+        exs="tasks.exs"
+        chmod +x "$exs"
+
+        tasks=($(./$exs))
+
+        # join array with spaces
+        separator=" "
+        task_list="$(printf "${separator}%s" "${tasks[@]}")"
+        task_list="${task_list:${#separator}}"
+
+        touch "$task_list_file"
+        echo "$task_list" >> "$task_list_file"
+    else
+        while read line
+        do
+            task_list=$(echo "$line")
+        done < $task_list_file
+    fi
 
     case "${previous}" in
         archive)    _mix_option $current "--no-compile"; return 0;;
@@ -31,11 +49,9 @@ _mix()
 # @current @option
 _mix_option()
 {
-    # if [[ ${1} == -* ]] ; then
-        COMPREPLY=($(compgen -o filenames -- ${current}))
-    # else
-        # COMPREPLY=($(compgen -o filenames -- ${current}))
-    # fi
+    if [[ ${1} == --* ]] ; then
+        COMPREPLY=($(compgen -W "${2}" -- ${current}))
+    fi
 }
 
 complete -F _mix mix
