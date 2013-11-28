@@ -12,6 +12,7 @@
 #   *) Copy this file and .tasks.exs to ~/.mix-completion.bash
 #   *) Append this line to your .bashrc:
 #       source ~/.mix-completion.bash
+#   *) Run the above command for the changes to take place immediately
 
 __mix()
 {
