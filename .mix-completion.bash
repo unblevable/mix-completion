@@ -9,7 +9,7 @@
 #
 # Installation:
 #
-#   *) Copy this file to ~/.mix-completion.bash
+#   *) Copy this file and .tasks.exs to ~/.mix-completion.bash
 #   *) Append this line to your .bashrc:
 #       source ~/.mix-completion.bash
 
@@ -23,7 +23,7 @@ __mix()
     previous="${COMP_WORDS[COMP_CWORD - 1]}"
     more_previous="${COMP_WORDS[COMP_CWORD - 2]}"
 
-    __mix_get_tasks ".task_list"
+    __mix_get_tasks ".mix-completion-task-list"
 
     case "${previous}" in
         mix)
@@ -131,7 +131,7 @@ __mix_get_tasks()
     # create a cache if it doesn't exist
     if [ ! -f "$1" ] ; then
         # tasks.exs outputs a space-delimted string of Mix tasks
-        exs="tasks.exs"
+        exs=".mix-completion-tasks.exs"
         chmod +x "$exs"
         tasks=($(./$exs))
 
