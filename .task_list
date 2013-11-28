@@ -1,1 +1,0 @@
-archive clean cmd compile deps deps.clean deps.compile deps.get deps.unlock deps.update do escriptize help local local.install local.rebar local.uninstall new run test
