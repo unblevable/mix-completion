@@ -9,7 +9,7 @@
 #
 # Installation:
 #
-#   *) Copy this file and .tasks.exs to ~/.mix-completion.bash
+#   *) Copy this file to ~/.mix-completion.bash
 #   *) Append this line to your .bashrc:
 #       source ~/.mix-completion.bash
 #   *) Run the above command for the changes to take place immediately
@@ -132,11 +132,14 @@ __mix_get_tasks()
     # create a cache if it doesn't exist
     if [ ! -f "$1" ] ; then
         # tasks.exs outputs a space-delimted string of Mix tasks
-        exs="$HOME/.mix-completion-tasks.exs"
-        chmod +x "$exs"
-        tasks=($(./$exs))
-
-        # join array with spaces
+        tasks=`elixir -e '
+		Mix.Task.load_all
+		Mix.Task.all_modules
+			|>  Enum.sort
+			|>  Enum.map_join(" ", fn(x) -> Mix.Task.task_name(x) end)
+			|>  IO.write'`        
+	
+	# join array with spaces
         separator=" "
         task_list="$(printf "${separator}%s" "${tasks[@]}")"
         task_list="${task_list:${#separator}}"
