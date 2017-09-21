@@ -14,6 +14,20 @@
 #       source ~/.mix-completion.bash
 #   *) Run the above command for the changes to take place immediately
 
+__mix_task_list()
+{
+    local elixir_script='
+
+Mix.Task.load_all
+
+Mix.Task.all_modules
+|> Enum.sort
+|> Enum.map_join(" ", &Mix.Task.task_name/1)
+|> IO.write
+'
+    elixir -e "${elixir_script}"
+}
+
 __mix()
 {
     local cwd current previous more_previous exs tasks separator task_list superoption i j
@@ -131,10 +145,8 @@ __mix_get_tasks()
 {
     # create a cache if it doesn't exist
     if [ ! -f "$1" ] ; then
-        # tasks.exs outputs a space-delimted string of Mix tasks
-        exs="$HOME/.mix-completion-tasks.exs"
-        chmod +x "$exs"
-        tasks=($(./$exs))
+        # tasks.exs outputs a space-delimited string of Mix tasks
+        tasks=($(__mix_task_list))
 
         # join array with spaces
         separator=" "
