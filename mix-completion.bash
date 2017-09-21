@@ -16,11 +16,17 @@
 
 __mix_task_list()
 {
-        local exs="$HOME/.mix-completion-tasks.exs"
-        chmod +x "$exs"
-        ./$exs
-}
+    local elixir_script='
 
+Mix.Task.load_all
+
+Mix.Task.all_modules
+|> Enum.sort
+|> Enum.map_join(" ", &Mix.Task.task_name/1)
+|> IO.write
+'
+    elixir -e "${elixir_script}"
+}
 
 __mix()
 {
